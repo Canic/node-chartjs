@@ -25,14 +25,14 @@
   "author": "Jack Tuck",
   "license": "MIT",
   "dependencies": {
-    "canvas": "2.0.0-alpha.2",
-    "jsdom": "^11.6.2"
+    "canvas": "^2.6.1",
+    "jsdom": "^11.12.0"
   },
   "devDependencies": {
-    "chart.js": "2.4.0",
-    "opn": "^5.2.0"
+    "chart.js": "^2.9.3",
+    "opn": "^5.5.0"
   },
   "peerDependencies": {
-    "chart.js": "2.4.0"
+    "chart.js": "2.9.3"
   }
 }
