@@ -63,6 +63,8 @@ class ChartJs extends EventEmitter {
     this.window.CanvasRenderingContext2D = Context2d;
     this.canvas = this.window.document.getElementById("myChart");
     this.ctx = this.canvas.getContext("2d");
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
   async makeChart(chartConfig) {

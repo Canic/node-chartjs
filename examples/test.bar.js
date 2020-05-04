@@ -9,8 +9,21 @@ const barConfig = {
   data: {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [{
-      data: [5, 3, 4, 6, 4, 5, 4]
+      data: [5, 3, 4, 6, 4, 5, 4],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+      ]
     }]
+  },
+  dataset: {
+    barThickness: 40,
+    borderWidth: 1
   },
   options: {
     title: {
@@ -23,32 +36,32 @@ const barConfig = {
     },
 
     plugins: [{
-    beforeDraw: function (chartInstance) {
-      console.log('FOOOOO')
-      console.log('HEIGHT/WIDTH', chartInstance.chart.width, chartInstance.chart.height)
-      console.log('HIT BEFORE DRAW', chartInstance.chart.config.data.datasets)
-  
-      const ctx = chartInstance.chart.ctx
-      const dataset = chartInstance.chart.config.data.datasets[0]
-  
-      ctx.fillStyle = 'rgb(248, 249, 251)'
-      ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height)
+      beforeDraw: function (chartInstance) {
+        console.log('FOOOOO')
+        console.log('HEIGHT/WIDTH', chartInstance.chart.width, chartInstance.chart.height)
+        console.log('HIT BEFORE DRAW', chartInstance.chart.config.data.datasets)
 
-      const meta = dataset._meta
-  
-      for (let [key] of Object.keys(meta)) {
-        for (let i = 0; i < meta[key].data.length; i++) {
-          const bar = meta[key].data[i]._model
-          const gradient = ctx.createLinearGradient(0, bar.y, 0, bar.base)
-  
-          gradient.addColorStop(0, '#78C7FF')
-          gradient.addColorStop(1, '#6085E9')
-  
-          bar.backgroundColor = gradient
+        const ctx = chartInstance.chart.ctx
+        const dataset = chartInstance.chart.config.data.datasets[0]
+
+        ctx.fillStyle = 'rgb(31, 64, 132)'
+        ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height)
+
+        const meta = dataset._meta
+
+        for (let [key] of Object.keys(meta)) {
+          for (let i = 0; i < meta[key].data.length; i++) {
+            const bar = meta[key].data[i]._model
+            const gradient = ctx.createLinearGradient(0, bar.y, 0, bar.base)
+
+            gradient.addColorStop(0, '#78C7FF')
+            gradient.addColorStop(1, '#6085E9')
+
+            bar.backgroundColor = gradient
+          }
         }
       }
-    }
-  }],
+    }],
     layout: {
       padding: 20
     },
@@ -76,7 +89,6 @@ const barConfig = {
         }
       }],
       xAxes: [{
-        barThickness: 40,
         ticks: {
           // fontColor: '#D0D4D8',
           fontStyle: 'bold',
