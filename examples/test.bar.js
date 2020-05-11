@@ -1,118 +1,45 @@
 const ChartJs = require('..')
-
 const cjs = new ChartJs(1080, 526)
-
-const opn = require('opn')
 
 const barConfig = {
   type: 'bar',
   data: {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    labels: ['2019/4', '2019/5', '2019/6', '2019/7', '2019/8', '2019/9', '2019/10', '2019/11', '2019/12', '2020/01', '2020/02', '2020/03', '2020/04'],
     datasets: [{
-      data: [5, 3, 4, 6, 4, 5, 4],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-      ]
+      label: 'Besucher',
+      data: [0, 0, 0, 0, 0, 50, 300, 390, 320, 480, 460, 300, 400],
+      backgroundColor: 'rgba(44, 130, 201, 0.2)',
+      borderColor: 'rgba(75, 119, 190, 0.2)',
+      borderWidth: 1
+    },
+    {
+      label: 'Seitenaufrufe',
+      data: [0, 0, 0, 0, 0, 100, 700, 730, 600, 900, 800, 600, 790],
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
     }]
   },
-  dataset: {
-    barThickness: 40,
-    borderWidth: 1
-  },
   options: {
-    title: {
-      fontSize: 26,
-      fontStyle: 'bold',
-      display: true,
-      text: 'Hours Online',
-      // fontColor: '#818E9B',
-      padding: 40
-    },
-
-    plugins: [{
-      beforeDraw: function (chartInstance) {
-        console.log('FOOOOO')
-        console.log('HEIGHT/WIDTH', chartInstance.chart.width, chartInstance.chart.height)
-        console.log('HIT BEFORE DRAW', chartInstance.chart.config.data.datasets)
-
-        const ctx = chartInstance.chart.ctx
-        const dataset = chartInstance.chart.config.data.datasets[0]
-
-        ctx.fillStyle = 'rgb(31, 64, 132)'
-        ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height)
-
-        const meta = dataset._meta
-
-        for (let [key] of Object.keys(meta)) {
-          for (let i = 0; i < meta[key].data.length; i++) {
-            const bar = meta[key].data[i]._model
-            const gradient = ctx.createLinearGradient(0, bar.y, 0, bar.base)
-
-            gradient.addColorStop(0, '#78C7FF')
-            gradient.addColorStop(1, '#6085E9')
-
-            bar.backgroundColor = gradient
-          }
-        }
-      }
-    }],
-    layout: {
-      padding: 20
-    },
-    legend: {
-      display: false
-    },
     scales: {
       yAxes: [{
         ticks: {
-          beginAtZero: true,
-          // max: 12,
-          // max,
-          // suggestedMax: max,
-          // fontColor: '#B7BCC2',
-          fontSize: 22,
-          fontStyle: 'bold',
-          // stepSize,
-          padding: 40
-        },
-        gridLines: {
-          color: '#F0F1F3',
-          zeroLineColor: '#F0F1F3',
-          drawBorder: false,
-          tickMarkLength: 20
-        }
-      }],
-      xAxes: [{
-        ticks: {
-          // fontColor: '#D0D4D8',
-          fontStyle: 'bold',
-          fontSize: 22
-        },
-        gridLines: {
-          drawOnChartArea: false,
-          color: '#F0F1F3',
-          zeroLineColor: '#F0F1F3',
-          tickMarkLength: 20
+          beginAtZero: true
         }
       }]
+    }
+  },
+  defaults: {
+    global: {
+      defaultFontFamily: "Oswald"
     }
   }
 }
 
 cjs.makeChart(barConfig)
   .then(res => {
-    cjs.drawChart()
-
-    cjs.toFile('test.bar.png')
-      .then(_ => {
-        opn('test.bar.png')
-      })
+    cjs.drawChart();
+    cjs.toFile('test.bar.png');
   })
   .catch(console.error)
 

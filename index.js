@@ -4,47 +4,39 @@ const { EventEmitter } = require("events");
 const { promisify } = require("util");
 
 const { JSDOM } = require("jsdom");
-const { Context2d } = require("canvas");
+const { registerFont, Context2d } = require("canvas");
+
+registerFont(path.resolve(__dirname, "Oswald-Regular.ttf"), { family: 'Oswald' })
 
 function readPlugin(filePath) {
   return fs.readFileSync(filePath, "utf-8");
 }
-const chartJSPath = path.resolve(
-  path.join(path.dirname(require.resolve("chart.js")), "../dist/Chart.min.js")
-);
+const chartJSPath = require.resolve("chart.js");
 const chartJSSrc = readPlugin(chartJSPath);
 
-// resolve peer dependancy
+// CSS
+const chartJSCSSPath = path.resolve(path.join(require.resolve("chart.js"), "../Chart.min.css"));
+const chartJSCSS = readPlugin(chartJSCSSPath);
 
 class ChartJs extends EventEmitter {
-  constructor(width = 1000, height = 1000, hardcodedPlugins = []) {
+  constructor(width = 1000, height = 1000) {
     super();
     this.height = height;
     this.width = width;
 
-    this.loadWindow(hardcodedPlugins);
+    this.loadWindow();
   }
 
-  loadWindow(hardcodedPlugins) {
-    const scripts = [`<script>${chartJSSrc}</script>`];
-    for (const pl of hardcodedPlugins) {
-      scripts.push(`<script>${readPlugin(pl)}</script>`);
-    }
-    for (const pluginPath of hardcodedPlugins) {
-      const chartJSPath = path.dirname(require.resolve("chart.js"));
-      const chartJSSrc = fs.readFileSync(
-        `${chartJSPath}/../dist/Chart.min.js`,
-        "utf-8"
-      );
-    }
+  loadWindow() {
+    const scripts = [
+      `<script>${chartJSSrc}</script>`,
+      `<style>${chartJSCSS}</style>`
+    ];
+
     const html = `<html>
       <body>
-        <div id='chart-div' style='font-size:12; width:${this.width}; height:${
-      this.height
-    };'>
-          <canvas id='myChart' width=${this.width} height=${
-      this.height
-    }></canvas>
+        <div id='chart-div' style='width:${this.width}; height:${this.height};'>
+          <canvas id='myChart' width=${this.width} height=${this.height}"></canvas>
         </div>
       </body>
       ${scripts.join("\n")}
@@ -63,8 +55,6 @@ class ChartJs extends EventEmitter {
     this.window.CanvasRenderingContext2D = Context2d;
     this.canvas = this.window.document.getElementById("myChart");
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.fillStyle = 'white';
-    this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
   async makeChart(chartConfig) {
@@ -76,6 +66,7 @@ class ChartJs extends EventEmitter {
     chartConfig.options.width = 400;
     chartConfig.options.height = 400;
     chartConfig.options.animation = false;
+    chartConfig.defaults.global.defaultFontFamily = "Oswald";
 
     this.chartConfig = chartConfig;
 
@@ -102,6 +93,7 @@ class ChartJs extends EventEmitter {
       }
     }
 
+    this.window.Chart.defaults.global.defaultFontFamily = "Oswald";
     this._chart = new this.window.Chart(this.ctx, this.chartConfig);
 
     return this;
@@ -131,9 +123,17 @@ class ChartJs extends EventEmitter {
   }
 
   toFile(path, mime = "image/png") {
-    const writeFile = promisify(fs.writeFile);
+    // const writeFile = promisify(fs.writeFile);
 
-    return this.toBuffer(mime).then(blob => writeFile(path, blob, "binary"));
+    // return this.toBuffer(mime).then(blob => writeFile(path, blob, "binary"));
+    const base64Image = this._chart.toBase64Image();
+    return fs.writeFile(path, base64Image.split(';base64,').pop(), { encoding: 'base64' }, (err) => {
+      if (err) {
+        throw err;
+      }
+
+      console.log('File created');
+    });
   }
 }
 
